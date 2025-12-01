@@ -1,0 +1,49 @@
+﻿@model IEnumerable<EventApp.Models.Purchase>
+
+<div class="container mt-5">
+    <h2 class="text-primary mb-4">Purchase Summary</h2>
+
+    @if (Model != null && Model.Any())
+    {
+        var purchases = Model.ToList();
+
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+            <tr>
+                <th>#</th>
+                <th>Guest Name</th>
+                <th>Email</th>
+                <th>Event</th>
+                <th>Quantity</th>
+                <th>Total Cost</th>
+                <th>Purchase Date</th>
+                <th>Details</th>
+            </tr>
+            </thead>
+            <tbody>
+            @for (int i = 0; i < purchases.Count; i++)
+            {
+                var p = purchases[i];
+                <tr>
+                    <td>@(i + 1)</td>
+                    <td>@p.GuestName</td>
+                    <td>@p.GuestEmail</td>
+                    <td>@p.Event.Title</td>
+                    <td>@p.Quantity</td>
+                    <td>$@p.TotalCost</td>
+                    <td>@p.PurchaseDate.ToString("g")</td>
+                    <td>
+                        <a asp-action="Confirmation" asp-route-id="@p.PurchaseId" class="btn btn-info btn-sm">
+                            View
+                        </a>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <div class="alert alert-info">No purchases have been made yet.</div>
+    }
+</div>

@@ -1,0 +1,18 @@
+﻿@model EventApp.Models.Purchase
+
+<div class="container mt-5">
+    <h2 class="text-success mb-4">Purchase Details</h2>
+
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">@Model.Event.Title</h5>
+            <p><strong>Guest Name:</strong> @Model.GuestName</p>
+            <p><strong>Email:</strong> @Model.GuestEmail</p>
+            <p><strong>Purchase Date:</strong> @Model.PurchaseDate.ToString("g")</p>
+            <p><strong>Quantity:</strong> @Model.Quantity</p>
+            <p><strong>Total Cost:</strong> $@Model.TotalCost</p>
+        </div>
+    </div>
+
+    <a asp-controller="Purchase" asp-action="Index" class="btn btn-primary mt-3">Back to Summary</a>
+</div>

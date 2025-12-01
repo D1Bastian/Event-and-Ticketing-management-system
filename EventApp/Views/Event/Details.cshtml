@@ -1,0 +1,45 @@
+﻿@model EventApp.Models.Event
+
+@{
+    ViewData["Title"] = "Event Details";
+}
+
+<div class="container mt-5">
+    <div class="card shadow-lg p-4">
+        <h2 class="text-center text-info mb-4 fw-bold">Event Details</h2>
+
+        <div class="row">
+            <div class="col-md-6 border-end">
+                <p class="mb-2"><strong>Title:</strong> <span class="fw-semibold">@Model.Title</span></p>
+                <p class="mb-2"><strong>Category:</strong> @Model.Category</p>
+                <p class="mb-2"><strong>Location:</strong> @Model.Location</p>
+
+                @* FIX: Use the unified EventDate property, formatted for Date only *@
+                <p class="mb-2"><strong>Date:</strong> @Model.EventDate.ToShortDateString()</p>
+                
+                @* FIX: Use the unified EventDate property, formatted for Time only *@
+                <p class="mb-2"><strong>Time:</strong> @Model.EventDate.ToShortTimeString()</p>
+            </div>
+            <div class="col-md-6">
+                <p class="mb-2"><strong>Ticket Price:</strong> <span class="fw-bold text-success">@Model.TicketPrice.ToString("C")</span></p>
+                <p class="mb-2"><strong>Available Tickets:</strong> @Model.AvailableTickets</p>
+                <p class="mb-2"><strong>Total Capacity:</strong> @Model.Capacity</p>
+            </div>
+        </div>
+
+        <div class="mt-4">
+            <p><strong>Description:</strong></p>
+            <p class="border p-3 bg-light rounded">@Model.Description</p>
+        </div>
+
+        <div class="d-flex justify-content-end gap-2 mt-4">
+            @* FIX: Use the correct primary key property name, Id, for the route value *@
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning px-4">
+                <i class="bi bi-pencil"></i> Edit
+            </a>
+            <a asp-action="Index" class="btn btn-secondary px-4">
+                <i class="bi bi-arrow-left"></i> Back
+            </a>
+        </div>
+    </div>
+</div>

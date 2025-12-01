@@ -1,0 +1,90 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Home";
+}
+
+<!-- 🏠 Homepage -->
+<div class="container text-center py-5">
+    <div class="mb-5">
+        <h1 class="display-5 fw-bold text-dark">
+            🎟 Virtual Event Ticketing System
+        </h1>
+        <p class="lead text-muted">
+            Welcome to the easiest way to manage, browse, and purchase tickets for your favorite virtual events.
+        </p>
+        <div class="mt-4">
+            <a asp-controller="Event" asp-action="Index" class="btn btn-primary btn-lg m-2">
+                <i class="fa-solid fa-calendar-days"></i> View Events
+            </a>
+            <a asp-controller="Event" asp-action="Create" class="btn btn-success btn-lg m-2">
+                <i class="fa-solid fa-plus"></i> Create New Event
+            </a>
+        </div>
+    </div>
+
+    <!-- 🔥 Featured Section -->
+    <div class="row g-4 justify-content-center">
+        <div class="col-md-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fa-solid fa-laptop"></i> Host Virtual Webinars</h5>
+                    <p class="card-text">
+                        Schedule and organize interactive webinars or workshops with just a few clicks.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fa-solid fa-music"></i> Enjoy Live Concerts</h5>
+                    <p class="card-text">
+                        Purchase tickets for virtual concerts and enjoy performances from the comfort of your home.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fa-solid fa-users"></i> Join Engaging Events</h5>
+                    <p class="card-text">
+                        Connect with others in conferences, meetups, and online events worldwide.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 📊 System Overview -->
+    <div class="mt-5">
+        <h3 class="fw-bold mb-3">Why Choose Our System?</h3>
+        <div class="row justify-content-center">
+            <div class="col-md-3">
+                <div class="p-3 border rounded bg-light shadow-sm">
+                    <h1 class="text-primary">🎫</h1>
+                    <p class="fw-semibold">Easy Ticket Management</p>
+                    <a class="nav-link text-dark" asp-area="" asp-controller="Event" asp-action="Index">Event Management</a>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="p-3 border rounded bg-light shadow-sm">
+                    <h1 class="text-success">🔍</h1>
+                    <p class="fw-semibold">Powerful Search & Filter</p>
+                    <a class="nav-link" asp-controller="Event" asp-action="BrowseEvent">Browse Events</a>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="p-3 border rounded bg-light shadow-sm">
+                    <h1 class="text-danger">💳</h1>
+                    <p class="fw-semibold">Guest Purchase Support</p>
+                    <a class="nav-link text-dark" asp-area="" asp-controller="Purchase" asp-action="Index">Purchase Ticket</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

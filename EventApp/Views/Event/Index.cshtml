@@ -1,0 +1,108 @@
+﻿@model IEnumerable<EventApp.Models.Event>
+
+@{
+    ViewData["Title"] = "All Events";
+}
+
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-primary fw-bold">Upcoming Events</h2>
+        <a asp-action="Create" class="btn btn-primary shadow">
+            <i class="bi bi-plus-circle"></i> Create New Event
+        </a>
+    </div>
+
+    @if (Model.Any())
+    {
+        <div class="table-responsive mb-5">
+            <table class="table table-hover align-middle shadow-sm rounded-3 overflow-hidden">
+                <thead class="table-dark">
+                <tr>
+                    <th>Title</th>
+                    <th>Category</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Price</th>
+                    <th>Tickets</th>
+                    <th class="text-center">Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.Title</td>
+                        <td>@item.Category</td>
+                        @* FIX: Use the unified EventDate property, formatted for Date only *@
+                        <td>@item.EventDate.ToShortDateString()</td>
+                        @* FIX: Use the unified EventDate property, formatted for Time only *@
+                        <td>@item.EventDate.ToShortTimeString()</td>
+                        <td>@item.TicketPrice.ToString("C")</td>
+                        <td>@item.AvailableTickets</td>
+                        <td class="text-center">
+                            <div class="btn-group" role="group">
+                                @* FIX: Use the correct primary key Id for routing *@
+                                <a class="btn btn-info btn-sm" asp-action="Details" asp-route-id="@item.Id">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                @* FIX: Use the correct primary key Id for routing *@
+                                <a class="btn btn-warning btn-sm" asp-action="Edit" asp-route-id="@item.Id">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                @* FIX: Use the correct primary key Id for routing *@
+                                <a class="btn btn-danger btn-sm" asp-action="Delete" asp-route-id="@item.Id">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+
+        <h2 class="text-primary mb-4">Available Tickets</h2>
+        <div class="row">
+            @foreach (var e in Model)
+            {
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="card h-100 shadow-sm border-0">
+                        <div class="card-body">
+                            <h5 class="card-title text-primary fw-bold">@e.Title</h5>
+                            <p class="card-text">
+                                <strong>Category:</strong> @e.Category <br/>
+                                @* FIX: Use the unified EventDate property *@
+                                <strong>Date:</strong> @e.EventDate.ToShortDateString() <br/>
+                                @* FIX: Use the unified EventDate property *@
+                                <strong>Time:</strong> @e.EventDate.ToShortTimeString() <br/>
+                                <strong>Location:</strong> @e.Location <br/>
+                                <strong>Price:</strong> @e.TicketPrice.ToString("C") <br/>
+                                <strong>Available:</strong> <span class="fw-bold @(e.AvailableTickets > 0 ? "text-success" : "text-danger")">@e.AvailableTickets</span>
+                            </p>
+                        </div>
+                        <div class="card-footer text-center bg-light border-0">
+                            @if (e.AvailableTickets > 0)
+                            {
+                                @* FIX: Use the correct primary key Id for the route value (as eventId) *@
+                                <a asp-controller="Purchase" asp-action="Create" asp-route-eventId="@e.Id" class="btn btn-success w-100">
+                                    Buy Ticket
+                                </a>
+                            }
+                            else
+                            {
+                                <span class="text-danger fw-bold">Sold Out</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info text-center" role="alert">
+            <h4 class="alert-heading">No Events Found</h4>
+            <p>It looks like there are no events currently scheduled. Click the "Create New Event" button to add one!</p>
+        </div>
+    }
+</div>
