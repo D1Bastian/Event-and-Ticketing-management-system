@@ -1,88 +1,77 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
-}@{
+@{
     Layout = "~/Views/Shared/_Layout.cshtml";
     ViewData["Title"] = "Home";
+    var canManageEvents = User.IsInRole("Admin") || User.IsInRole("Organizer");
 }
 
-<!-- 🏠 Homepage -->
-<div class="container text-center py-5">
-    <div class="mb-5">
-        <h1 class="display-5 fw-bold text-dark">
-            🎟 Virtual Event Ticketing System
-        </h1>
-        <p class="lead text-muted">
-            Welcome to the easiest way to manage, browse, and purchase tickets for your favorite virtual events.
-        </p>
-        <div class="mt-4">
-            <a asp-controller="Event" asp-action="Index" class="btn btn-primary btn-lg m-2">
-                <i class="fa-solid fa-calendar-days"></i> View Events
-            </a>
-            <a asp-controller="Event" asp-action="Create" class="btn btn-success btn-lg m-2">
-                <i class="fa-solid fa-plus"></i> Create New Event
-            </a>
-        </div>
-    </div>
-
-    <!-- 🔥 Featured Section -->
-    <div class="row g-4 justify-content-center">
-        <div class="col-md-4">
-            <div class="card shadow-sm h-100">
-                <div class="card-body">
-                    <h5 class="card-title"><i class="fa-solid fa-laptop"></i> Host Virtual Webinars</h5>
-                    <p class="card-text">
-                        Schedule and organize interactive webinars or workshops with just a few clicks.
-                    </p>
-                </div>
+<div class="container py-5">
+    <div class="row align-items-center g-4 mb-5">
+        <div class="col-lg-7">
+            <span class="badge rounded-pill bg-primary-subtle text-primary-emphasis mb-3">ASP.NET Core MVC + PostgreSQL</span>
+            <h1 class="display-5 fw-bold text-dark">Event-and-Tickecting-management-system</h1>
+            <p class="lead text-muted">
+                Publish events, browse schedules, search by date or category, and complete guest ticket purchases with private receipt links.
+            </p>
+            <div class="d-flex flex-wrap gap-2 mt-4">
+                <a asp-controller="Event" asp-action="Index" class="btn btn-primary btn-lg">
+                    <i class="bi bi-calendar-event me-2"></i>Explore Events
+                </a>
+                <a asp-controller="Event" asp-action="Search" class="btn btn-outline-primary btn-lg">
+                    <i class="bi bi-search me-2"></i>Search Events
+                </a>
+                @if (canManageEvents)
+                {
+                    <a asp-controller="Event" asp-action="Create" class="btn btn-success btn-lg">
+                        <i class="bi bi-plus-circle me-2"></i>Create Event
+                    </a>
+                }
             </div>
         </div>
-
-        <div class="col-md-4">
-            <div class="card shadow-sm h-100">
-                <div class="card-body">
-                    <h5 class="card-title"><i class="fa-solid fa-music"></i> Enjoy Live Concerts</h5>
-                    <p class="card-text">
-                        Purchase tickets for virtual concerts and enjoy performances from the comfort of your home.
-                    </p>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-4">
-            <div class="card shadow-sm h-100">
-                <div class="card-body">
-                    <h5 class="card-title"><i class="fa-solid fa-users"></i> Join Engaging Events</h5>
-                    <p class="card-text">
-                        Connect with others in conferences, meetups, and online events worldwide.
-                    </p>
+        <div class="col-lg-5">
+            <div class="card shadow-sm border-0 bg-light">
+                <div class="card-body p-4">
+                    <h2 class="h4 fw-semibold mb-3">What the app covers</h2>
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-3"><i class="bi bi-shield-check text-success me-2"></i>Role-based event management for admins and organizers</li>
+                        <li class="mb-3"><i class="bi bi-ticket-perforated text-primary me-2"></i>Guest-friendly ticket purchases with live inventory checks</li>
+                        <li class="mb-3"><i class="bi bi-receipt text-warning me-2"></i>Protected purchase receipts instead of public confirmation pages</li>
+                        <li><i class="bi bi-funnel text-info me-2"></i>Search and browse flows for categories, dates, pricing, and availability</li>
+                    </ul>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- 📊 System Overview -->
-    <div class="mt-5">
-        <h3 class="fw-bold mb-3">Why Choose Our System?</h3>
-        <div class="row justify-content-center">
-            <div class="col-md-3">
-                <div class="p-3 border rounded bg-light shadow-sm">
-                    <h1 class="text-primary">🎫</h1>
-                    <p class="fw-semibold">Easy Ticket Management</p>
-                    <a class="nav-link text-dark" asp-area="" asp-controller="Event" asp-action="Index">Event Management</a>
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h3 class="h5 card-title"><i class="bi bi-diagram-3 me-2 text-primary"></i>Organizer Workflow</h3>
+                    <p class="card-text text-muted mb-0">
+                        Create, edit, and delete events while keeping capacity and available ticket counts consistent.
+                    </p>
                 </div>
             </div>
-            <div class="col-md-3">
-                <div class="p-3 border rounded bg-light shadow-sm">
-                    <h1 class="text-success">🔍</h1>
-                    <p class="fw-semibold">Powerful Search & Filter</p>
-                    <a class="nav-link" asp-controller="Event" asp-action="BrowseEvent">Browse Events</a>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h3 class="h5 card-title"><i class="bi bi-compass me-2 text-success"></i>Attendee Discovery</h3>
+                    <p class="card-text text-muted mb-0">
+                        Browse upcoming events, compare prices, and filter by category or ticket status before checkout.
+                    </p>
                 </div>
             </div>
-            <div class="col-md-3">
-                <div class="p-3 border rounded bg-light shadow-sm">
-                    <h1 class="text-danger">💳</h1>
-                    <p class="fw-semibold">Guest Purchase Support</p>
-                    <a class="nav-link text-dark" asp-area="" asp-controller="Purchase" asp-action="Index">Purchase Ticket</a>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h3 class="h5 card-title"><i class="bi bi-lock me-2 text-danger"></i>Security Defaults</h3>
+                    <p class="card-text text-muted mb-0">
+                        Anti-forgery validation, HTTPS redirects, secured cookies, and restrictive response headers are baked in.
+                    </p>
                 </div>
             </div>
         </div>

@@ -1,291 +1,307 @@
-﻿using EventApp.Data;
+using EventApp.Data;
 using EventApp.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization; 
-using System.Linq;
-using System; // Required for DateTime and DateTime?
 
-namespace EventApp.Controllers
+namespace EventApp.Controllers;
+
+public class EventController : Controller
 {
-    public class EventsController : Controller
+    private readonly ApplicationDbContext _context;
+
+    public EventController(ApplicationDbContext context)
     {
-        private readonly ApplicationDbContext _context;
+        _context = context;
+    }
 
-        public EventsController(ApplicationDbContext context)
+    public async Task<IActionResult> Index()
+    {
+        var events = await _context.Events
+            .AsNoTracking()
+            .OrderBy(e => e.EventDate)
+            .ToListAsync();
+
+        return View(events);
+    }
+
+    public async Task<IActionResult> Details(int? id)
+    {
+        if (id == null)
         {
-            _context = context;
+            return NotFound();
         }
 
-        // GET: Events (Publicly accessible)
-        // No [Authorize] attribute here means anyone can view the list of events.
-        public async Task<IActionResult> Index()
+        var eventItem = await _context.Events
+            .AsNoTracking()
+            .FirstOrDefaultAsync(m => m.Id == id);
+
+        if (eventItem == null)
         {
-            // Use ToListAsync() for asynchronous operation
-            return View(await _context.Events.ToListAsync());
+            return NotFound();
         }
 
-        // GET: Events/Details/5 (Publicly accessible)
-        public async Task<IActionResult> Details(int? id)
+        return View(eventItem);
+    }
+
+    [Authorize(Roles = "Admin,Organizer")]
+    public IActionResult Create()
+    {
+        return View(new Event
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            EventDate = DateTime.Now.AddDays(7),
+            Capacity = 50,
+            AvailableTickets = 50
+        });
+    }
 
-            var @event = await _context.Events
-                // Use FirstOrDefaultAsync() for asynchronous operation
-                .FirstOrDefaultAsync(m => m.Id == id); 
-            
-            if (@event == null)
-            {
-                return NotFound();
-            }
+    [HttpPost]
+    [Authorize(Roles = "Admin,Organizer")]
+    public async Task<IActionResult> Create([Bind("Title,Description,EventDate,Location,Capacity,TicketPrice,Category,AvailableTickets")] Event eventItem)
+    {
+        ValidateEvent(eventItem);
 
-            return View(@event);
+        if (!ModelState.IsValid)
+        {
+            return View(eventItem);
         }
 
-        // =========================================================================
-        // AUTHORIZED ACTIONS (Restricted to Admin and Organizer Roles)
-        // =========================================================================
+        _context.Add(eventItem);
+        await _context.SaveChangesAsync();
+        return RedirectToAction(nameof(Index));
+    }
 
-        // GET: Events/Create
-        [Authorize(Roles = "Admin,Organizer")]
-        public IActionResult Create()
+    [Authorize(Roles = "Admin,Organizer")]
+    public async Task<IActionResult> Edit(int? id)
+    {
+        if (id == null)
         {
-            return View();
+            return NotFound();
         }
 
-        // POST: Events/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin,Organizer")]
-        public async Task<IActionResult> Create([Bind("Title,Description,EventDate,Location,Capacity,TicketPrice,Category,AvailableTickets")] Event @event)
+        var eventItem = await _context.Events.FindAsync(id);
+        if (eventItem == null)
         {
-            if (ModelState.IsValid)
-            {
-                _context.Add(@event);
-                // Use SaveChangesAsync() for asynchronous operation
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(@event);
+            return NotFound();
         }
 
-        // GET: Events/Edit/5
-        [Authorize(Roles = "Admin,Organizer")]
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
+        return View(eventItem);
+    }
 
-            // Use FindAsync() for asynchronous operation
-            var @event = await _context.Events.FindAsync(id); 
-            if (@event == null)
-            {
-                return NotFound();
-            }
-            return View(@event);
+    [HttpPost]
+    [Authorize(Roles = "Admin,Organizer")]
+    public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Description,EventDate,Location,Capacity,TicketPrice,Category,AvailableTickets")] Event eventItem)
+    {
+        if (id != eventItem.Id)
+        {
+            return NotFound();
         }
 
-        // POST: Events/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin,Organizer")]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Description,EventDate,Location,Capacity,TicketPrice,Category,AvailableTickets")] Event @event)
-        {
-            // IMPORTANT: Ensuring we check against the ID property
-            if (id != @event.Id) 
-            {
-                return NotFound();
-            }
+        ValidateEvent(eventItem);
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(@event);
-                    // Use SaveChangesAsync() for asynchronous operation
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!await _context.Events.AnyAsync(e => e.Id == id)) // Use AnyAsync
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(@event);
+        if (!ModelState.IsValid)
+        {
+            return View(eventItem);
         }
 
-        // GET: Events/Delete/5
-        [Authorize(Roles = "Admin,Organizer")]
-        public async Task<IActionResult> Delete(int? id)
+        try
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var @event = await _context.Events
-                // Use FirstOrDefaultAsync() for asynchronous operation
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (@event == null)
-            {
-                return NotFound();
-            }
-
-            return View(@event);
-        }
-
-        // POST: Events/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin,Organizer")]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            // Use FindAsync() for asynchronous operation
-            var @event = await _context.Events.FindAsync(id);
-            if (@event != null)
-            {
-                _context.Events.Remove(@event);
-            }
-
-            // Use SaveChangesAsync() for asynchronous operation
+            _context.Update(eventItem);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            if (!await _context.Events.AnyAsync(e => e.Id == id))
+            {
+                return NotFound();
+            }
+
+            throw;
         }
 
-        // =========================================================================
-        // PUBLIC QUERY ACTIONS (Integrated from user query)
-        // =========================================================================
+        return RedirectToAction(nameof(Index));
+    }
 
-        // GET: Events/Overview (Publicly accessible)
-        public async Task<IActionResult> Overview()
+    [Authorize(Roles = "Admin,Organizer")]
+    public async Task<IActionResult> Delete(int? id)
+    {
+        if (id == null)
         {
-            var totalEvents = await _context.Events.CountAsync(); // Use CountAsync
-            var totalCategories = await _context.Events.Select(e => e.Category).Distinct().CountAsync(); // Use CountAsync
-            
-            // Note: Assuming 'TicketPrice' field exists on the Event model
-            var lowPriceEvents = await _context.Events
-                .Where(e => e.TicketPrice < 5) // < $5 tickets
-                .OrderBy(e => e.TicketPrice)
-                .ToListAsync(); // Use ToListAsync
-
-            ViewBag.TotalEvents = totalEvents;
-            ViewBag.TotalCategories = totalCategories;
-            ViewBag.LowPriceEvents = lowPriceEvents;
-            
-
-            return View();
+            return NotFound();
         }
 
-        // GET: Events/BrowseEvent?category=Music (Publicly accessible)
-        public async Task<IActionResult> BrowseEvent(string category)
+        var eventItem = await _context.Events
+            .AsNoTracking()
+            .FirstOrDefaultAsync(m => m.Id == id);
+
+        if (eventItem == null)
         {
-            // Get all categories for dropdown
-            var categories = await _context.Events
-                .Select(e => e.Category)
-                .Distinct()
-                .OrderBy(c => c)
-                .ToListAsync(); // Use ToListAsync
-
-            // Get events (filtered if category is selected)
-            var events = _context.Events.AsQueryable();
-
-            if (!string.IsNullOrEmpty(category))
-            {
-                events = events.Where(e => e.Category == category);
-            }
-
-            ViewBag.Categories = categories;
-            ViewBag.SelectedCategory = category;
-
-            return View(await events.ToListAsync()); // Use ToListAsync
+            return NotFound();
         }
 
-        // GET: Events/Search (Publicly accessible)
-        public async Task<IActionResult> Search(
-            string searchTitle, 
-            string category, 
-            DateTime? startDate, 
-            DateTime? endDate, 
-            string ticketStatus, 
-            string sortOrder)
+        return View(eventItem);
+    }
+
+    [HttpPost, ActionName("Delete")]
+    [Authorize(Roles = "Admin,Organizer")]
+    public async Task<IActionResult> DeleteConfirmed(int id)
+    {
+        var eventItem = await _context.Events.FindAsync(id);
+        if (eventItem != null)
         {
-            // Get all events
-            var events = _context.Events.AsQueryable();
+            _context.Events.Remove(eventItem);
+            await _context.SaveChangesAsync();
+        }
 
-            // Filter by title
-            if (!string.IsNullOrEmpty(searchTitle))
-            {
-                // Note: Using ToLowerInvariant() for case-insensitive search (DB specific)
-                events = events.Where(e => e.Title.ToLower().Contains(searchTitle.ToLower())); 
-            }
+        return RedirectToAction(nameof(Index));
+    }
 
-            // Filter by category
-            if (!string.IsNullOrEmpty(category))
-            {
-                events = events.Where(e => e.Category == category);
-            }
+    public async Task<IActionResult> Overview()
+    {
+        var totalEvents = await _context.Events.CountAsync();
+        var totalCategories = await _context.Events
+            .Where(e => !string.IsNullOrWhiteSpace(e.Category))
+            .Select(e => e.Category)
+            .Distinct()
+            .CountAsync();
+        var totalAvailableTickets = await _context.Events.SumAsync(e => (int?)e.AvailableTickets) ?? 0;
+        var lowPriceEvents = await _context.Events
+            .AsNoTracking()
+            .Where(e => e.TicketPrice < 5)
+            .OrderBy(e => e.TicketPrice)
+            .ThenBy(e => e.EventDate)
+            .ToListAsync();
 
-            // Filter by date range
-            if (startDate.HasValue)
-            {
-                // CORRECTED: Using EventDate instead of Date
-                events = events.Where(e => e.EventDate >= startDate.Value);
-            }
-            if (endDate.HasValue)
-            {
-                // CORRECTED: Using EventDate instead of Date
-                events = events.Where(e => e.EventDate <= endDate.Value);
-            }
+        ViewBag.TotalEvents = totalEvents;
+        ViewBag.TotalCategories = totalCategories;
+        ViewBag.TotalAvailableTickets = totalAvailableTickets;
+        ViewBag.LowPriceEvents = lowPriceEvents;
 
-            // Filter by ticket availability
-            if (!string.IsNullOrEmpty(ticketStatus))
-            {
-                // CORRECTED: Using Capacity instead of AvailableTickets (assuming Capacity is the source of truth for ticket count)
-                // Note: If you have a separate AvailableTickets property, please update the Event model accordingly.
-                if (ticketStatus == "Available")
-                    events = events.Where(e => e.Capacity > 0); 
-                else if (ticketStatus == "SoldOut")
-                    events = events.Where(e => e.Capacity == 0); 
-            }
+        return View();
+    }
 
-            // Sorting
-            events = sortOrder switch
+    public async Task<IActionResult> BrowseEvent(string? category)
+    {
+        var categories = await _context.Events
+            .AsNoTracking()
+            .Where(e => !string.IsNullOrWhiteSpace(e.Category))
+            .Select(e => e.Category)
+            .Distinct()
+            .OrderBy(c => c)
+            .ToListAsync();
+
+        var events = _context.Events
+            .AsNoTracking()
+            .OrderBy(e => e.EventDate)
+            .AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(category))
+        {
+            events = events.Where(e => e.Category == category);
+        }
+
+        ViewBag.Categories = categories;
+        ViewBag.SelectedCategory = category ?? string.Empty;
+
+        return View(await events.ToListAsync());
+    }
+
+    public async Task<IActionResult> Search(
+        string? searchTitle,
+        string? category,
+        DateTime? startDate,
+        DateTime? endDate,
+        string? ticketStatus,
+        string? sortOrder)
+    {
+        searchTitle = searchTitle?.Trim();
+        category = category?.Trim();
+
+        var events = _context.Events
+            .AsNoTracking()
+            .AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(searchTitle))
+        {
+            events = events.Where(e => EF.Functions.ILike(e.Title, $"%{searchTitle}%"));
+        }
+
+        if (!string.IsNullOrWhiteSpace(category))
+        {
+            events = events.Where(e => e.Category == category);
+        }
+
+        if (startDate.HasValue && endDate.HasValue && startDate.Value.Date > endDate.Value.Date)
+        {
+            ViewBag.FilterError = "Start date must be on or before the end date.";
+            return View(await BuildSearchResultsAsync(Enumerable.Empty<Event>(), searchTitle, category, startDate, endDate, ticketStatus, sortOrder));
+        }
+
+        if (startDate.HasValue)
+        {
+            var normalizedStart = startDate.Value.Date;
+            events = events.Where(e => e.EventDate >= normalizedStart);
+        }
+
+        if (endDate.HasValue)
+        {
+            var normalizedEndExclusive = endDate.Value.Date.AddDays(1);
+            events = events.Where(e => e.EventDate < normalizedEndExclusive);
+        }
+
+        if (!string.IsNullOrWhiteSpace(ticketStatus))
+        {
+            events = ticketStatus switch
             {
-                "Title" => events.OrderBy(e => e.Title),
-                "Date" => events.OrderBy(e => e.EventDate), // CORRECTED: Using EventDate instead of Date
-                "Price" => events.OrderBy(e => e.TicketPrice),
-                _ => events.OrderBy(e => e.EventDate), // CORRECTED: Using EventDate instead of Date
+                "Available" => events.Where(e => e.AvailableTickets > 0),
+                "SoldOut" => events.Where(e => e.AvailableTickets <= 0),
+                _ => events
             };
+        }
 
-            // Get distinct categories for dropdown
-            var categories = await _context.Events
-                .Select(e => e.Category)
-                .Distinct()
-                .OrderBy(c => c)
-                .ToListAsync(); // Use ToListAsync
+        events = (sortOrder ?? "Date") switch
+        {
+            "Title" => events.OrderBy(e => e.Title).ThenBy(e => e.EventDate),
+            "Price" => events.OrderBy(e => e.TicketPrice).ThenBy(e => e.EventDate),
+            _ => events.OrderBy(e => e.EventDate).ThenBy(e => e.Title)
+        };
 
-            ViewBag.Categories = categories;
-            ViewBag.SelectedCategory = category;
-            ViewBag.SearchTitle = searchTitle;
-            ViewBag.StartDate = startDate?.ToString("yyyy-MM-dd");
-            ViewBag.EndDate = endDate?.ToString("yyyy-MM-dd");
-            ViewBag.TicketStatus = ticketStatus;
-            ViewBag.SortOrder = sortOrder;
+        return View(await BuildSearchResultsAsync(await events.ToListAsync(), searchTitle, category, startDate, endDate, ticketStatus, sortOrder));
+    }
 
-            return View(await events.ToListAsync()); // Use ToListAsync
+    private async Task<List<Event>> BuildSearchResultsAsync(
+        IEnumerable<Event> results,
+        string? searchTitle,
+        string? category,
+        DateTime? startDate,
+        DateTime? endDate,
+        string? ticketStatus,
+        string? sortOrder)
+    {
+        var categories = await _context.Events
+            .AsNoTracking()
+            .Where(e => !string.IsNullOrWhiteSpace(e.Category))
+            .Select(e => e.Category)
+            .Distinct()
+            .OrderBy(c => c)
+            .ToListAsync();
+
+        ViewBag.Categories = categories;
+        ViewBag.SelectedCategory = category ?? string.Empty;
+        ViewBag.SearchTitle = searchTitle ?? string.Empty;
+        ViewBag.StartDate = startDate?.ToString("yyyy-MM-dd") ?? string.Empty;
+        ViewBag.EndDate = endDate?.ToString("yyyy-MM-dd") ?? string.Empty;
+        ViewBag.TicketStatus = ticketStatus ?? string.Empty;
+        ViewBag.SortOrder = string.IsNullOrWhiteSpace(sortOrder) ? "Date" : sortOrder;
+
+        return results.ToList();
+    }
+
+    private void ValidateEvent(Event eventItem)
+    {
+        if (eventItem.AvailableTickets > eventItem.Capacity)
+        {
+            ModelState.AddModelError(nameof(Event.AvailableTickets), "Available tickets cannot exceed the event capacity.");
         }
     }
 }

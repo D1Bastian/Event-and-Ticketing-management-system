@@ -1,102 +1,205 @@
-﻿using EventApp.Data;
+using System.Text;
+using EventApp.Data;
 using EventApp.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Linq;
 
 namespace EventApp.Controllers;
 
 public class PurchaseController : Controller
 {
     private readonly ApplicationDbContext _context;
+    private readonly IDataProtector _receiptProtector;
 
-    public PurchaseController(ApplicationDbContext context)
+    public PurchaseController(ApplicationDbContext context, IDataProtectionProvider dataProtectionProvider)
     {
         _context = context;
+        _receiptProtector = dataProtectionProvider.CreateProtector("PurchaseReceiptAccess");
     }
 
-    // List all purchases (Guest users)
-    public IActionResult Index()
+    [Authorize(Roles = "Admin,Organizer")]
+    public async Task<IActionResult> Index()
     {
-        // Use Include to bring in the related Event data
-        var purchases = _context.Purchases
+        var purchases = await _context.Purchases
+            .AsNoTracking()
             .Include(p => p.Event)
             .OrderByDescending(p => p.PurchaseDate)
-            .ToList();
+            .ToListAsync();
 
         return View(purchases);
     }
 
-    // Confirmation page for a single purchase
-    public IActionResult Confirmation(int id)
+    public async Task<IActionResult> Confirmation(int id, string? token)
     {
-        var purchase = _context.Purchases
+        var purchase = await _context.Purchases
+            .AsNoTracking()
             .Include(p => p.Event)
-            .FirstOrDefault(p => p.PurchaseId == id);
+            .FirstOrDefaultAsync(p => p.PurchaseId == id);
 
         if (purchase == null)
+        {
             return NotFound();
+        }
+
+        if (!HasReceiptAccess(purchase, token))
+        {
+            return Forbid();
+        }
+
+        ViewBag.CanViewPurchaseSummary = User.IsInRole("Admin") || User.IsInRole("Organizer");
+        ViewBag.ShowConfetti = !string.IsNullOrWhiteSpace(token);
 
         return View(purchase);
     }
 
-    // GET: Purchase/Create/5 (Display purchase form for a specific event)
-    public IActionResult Create(int eventId)
+    public async Task<IActionResult> Create(int eventId)
     {
-        // FIX: Changed e.EventId to e.Id to match the Event model's primary key
-        var eventItem = _context.Events.FirstOrDefault(e => e.Id == eventId && e.AvailableTickets > 0);
-        
-        if (eventItem == null)
+        var model = await BuildPurchaseViewModelAsync(eventId);
+        if (model == null)
         {
             TempData["Error"] = "Event not found or sold out.";
-            return RedirectToAction("Index", "Events");
+            return RedirectToAction("Index", "Event");
         }
 
-        ViewBag.Event = eventItem;
-        return View();
+        return View(model);
     }
 
-    // POST: Purchase/Create (Handle ticket purchase submission)
     [HttpPost]
-    [ValidateAntiForgeryToken]
-    // Note: It's better practice to bind to a ViewModel instead of individual parameters, 
-    // but we'll stick to the current signature for minimal changes.
-    public IActionResult Create(int eventId, string guestName, string guestEmail, int quantity)
+    public async Task<IActionResult> Create(PurchaseRequestViewModel model)
     {
-        // FIX: Changed e.EventId to e.Id to match the Event model's primary key
-        var eventItem = _context.Events.FirstOrDefault(e => e.Id == eventId);
-        
-        // Basic server-side validation
-        if (eventItem == null)
+        await PopulatePurchaseViewModelAsync(model);
+
+        if (model.AvailableTickets <= 0)
         {
-            TempData["Error"] = "Event not found.";
-            return RedirectToAction("Index", "Events");
+            ModelState.AddModelError(string.Empty, "This event is sold out.");
+        }
+        else if (model.Quantity > model.AvailableTickets)
+        {
+            ModelState.AddModelError(nameof(model.Quantity), $"Only {model.AvailableTickets} ticket(s) remain.");
         }
 
-        if (quantity <= 0 || quantity > eventItem.AvailableTickets)
+        if (!ModelState.IsValid)
         {
-            TempData["Error"] = $"Invalid ticket quantity. Max available: {eventItem.AvailableTickets}";
-            return RedirectToAction(nameof(Create), new { eventId });
+            return View(model);
         }
 
-        // Save purchase
+        await using var transaction = await _context.Database.BeginTransactionAsync();
+
+        var updatedRows = await _context.Events
+            .Where(e => e.Id == model.EventId && e.AvailableTickets >= model.Quantity)
+            .ExecuteUpdateAsync(setters => setters
+                .SetProperty(e => e.AvailableTickets, e => e.AvailableTickets - model.Quantity));
+
+        if (updatedRows == 0)
+        {
+            await transaction.RollbackAsync();
+            await PopulatePurchaseViewModelAsync(model);
+            ModelState.AddModelError(nameof(model.Quantity), "Those tickets were just claimed. Try a smaller quantity.");
+            return View(model);
+        }
+
         var purchase = new Purchase
         {
-            EventId = eventId,
-            GuestName = guestName,
-            GuestEmail = guestEmail,
-            Quantity = quantity,
-            TotalCost = quantity * eventItem.TicketPrice,
+            EventId = model.EventId,
+            GuestName = model.GuestName.Trim(),
+            GuestEmail = model.GuestEmail.Trim(),
+            Quantity = model.Quantity,
+            TotalCost = model.Quantity * model.TicketPrice,
             PurchaseDate = DateTime.UtcNow
         };
 
-        // Update ticket count and save changes in a single transaction
-        eventItem.AvailableTickets -= quantity; 
-        
         _context.Purchases.Add(purchase);
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
+        await transaction.CommitAsync();
 
-        return RedirectToAction("Confirmation", new { id = purchase.PurchaseId });
+        return RedirectToAction(nameof(Confirmation), new
+        {
+            id = purchase.PurchaseId,
+            token = CreateReceiptToken(purchase)
+        });
+    }
+
+    private async Task<PurchaseRequestViewModel?> BuildPurchaseViewModelAsync(int eventId)
+    {
+        var eventItem = await _context.Events
+            .AsNoTracking()
+            .FirstOrDefaultAsync(e => e.Id == eventId);
+
+        if (eventItem == null)
+        {
+            return null;
+        }
+
+        return new PurchaseRequestViewModel
+        {
+            EventId = eventItem.Id,
+            EventTitle = eventItem.Title,
+            EventDate = eventItem.EventDate,
+            Location = eventItem.Location,
+            TicketPrice = eventItem.TicketPrice,
+            AvailableTickets = eventItem.AvailableTickets
+        };
+    }
+
+    private async Task PopulatePurchaseViewModelAsync(PurchaseRequestViewModel model)
+    {
+        var eventItem = await _context.Events
+            .AsNoTracking()
+            .FirstOrDefaultAsync(e => e.Id == model.EventId);
+
+        if (eventItem == null)
+        {
+            ModelState.AddModelError(string.Empty, "The selected event could not be found.");
+            model.EventTitle = "Unavailable event";
+            model.Location = string.Empty;
+            model.TicketPrice = 0;
+            model.AvailableTickets = 0;
+            return;
+        }
+
+        model.EventTitle = eventItem.Title;
+        model.EventDate = eventItem.EventDate;
+        model.Location = eventItem.Location;
+        model.TicketPrice = eventItem.TicketPrice;
+        model.AvailableTickets = eventItem.AvailableTickets;
+    }
+
+    private string CreateReceiptToken(Purchase purchase)
+    {
+        var payload = $"{purchase.PurchaseId}|{purchase.GuestEmail.Trim().ToLowerInvariant()}";
+        var protectedPayload = _receiptProtector.Protect(payload);
+        return WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(protectedPayload));
+    }
+
+    private bool HasReceiptAccess(Purchase purchase, string? token)
+    {
+        if (User.IsInRole("Admin") || User.IsInRole("Organizer"))
+        {
+            return true;
+        }
+
+        if (string.IsNullOrWhiteSpace(token))
+        {
+            return false;
+        }
+
+        try
+        {
+            var protectedPayload = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(token));
+            var payload = _receiptProtector.Unprotect(protectedPayload);
+            var parts = payload.Split('|', 2);
+
+            return parts.Length == 2
+                   && int.TryParse(parts[0], out var purchaseId)
+                   && purchaseId == purchase.PurchaseId
+                   && string.Equals(parts[1], purchase.GuestEmail.Trim().ToLowerInvariant(), StringComparison.Ordinal);
+        }
+        catch
+        {
+            return false;
+        }
     }
 }

@@ -1,18 +1,16 @@
-﻿@model dynamic
-
 @{
     ViewData["Title"] = "Event Overview";
 }
 
 <div class="container mt-5">
-    <h2 class="text-primary mb-4">📊 Event Overview</h2>
+    <h1 class="text-primary mb-4">Event Overview</h1>
 
     <div class="row g-4 mb-5">
         <div class="col-md-6 col-lg-4">
             <div class="card text-center h-100 shadow-sm border-primary">
                 <div class="card-body">
-                    <h5 class="card-title text-primary fw-semibold">Total Events Scheduled</h5>
-                    <h2 class="display-4 fw-bold">@ViewBag.TotalEvents</h2>
+                    <h2 class="h5 card-title text-primary fw-semibold">Total Events Scheduled</h2>
+                    <div class="display-4 fw-bold">@ViewBag.TotalEvents</div>
                 </div>
             </div>
         </div>
@@ -20,27 +18,25 @@
         <div class="col-md-6 col-lg-4">
             <div class="card text-center h-100 shadow-sm border-success">
                 <div class="card-body">
-                    <h5 class="card-title text-success fw-semibold">Unique Categories</h5>
-                    <h2 class="display-4 fw-bold">@ViewBag.TotalCategories</h2>
+                    <h2 class="h5 card-title text-success fw-semibold">Unique Categories</h2>
+                    <div class="display-4 fw-bold">@ViewBag.TotalCategories</div>
                 </div>
             </div>
         </div>
-        
+
         <div class="col-md-6 col-lg-4">
             <div class="card text-center h-100 shadow-sm border-info">
                 <div class="card-body">
-                    <h5 class="card-title text-info fw-semibold">Total Tickets Available</h5>
-                    <h2 class="display-4 fw-bold">@ViewBag.TotalAvailableTickets</h2>
+                    <h2 class="h5 card-title text-info fw-semibold">Tickets Available</h2>
+                    <div class="display-4 fw-bold">@ViewBag.TotalAvailableTickets</div>
                 </div>
             </div>
         </div>
     </div>
-    
-    <hr class="my-4"/>
-    <h4 class="text-warning mb-3 fw-bold">💰 Events with Ticket Price < $5 (Bargain Bin)</h4>
-    <hr class="mb-4"/>
-    
-    @* FIX CS8602: Use 'is' to safely cast and check for null/count before iterating *@
+
+    <hr class="my-4" />
+    <h2 class="h4 text-warning mb-3 fw-bold">Events Under $5</h2>
+
     @if (ViewBag.LowPriceEvents is List<EventApp.Models.Event> lowPriceEvents && lowPriceEvents.Any())
     {
         <div class="table-responsive">
@@ -55,14 +51,14 @@
                 </tr>
                 </thead>
                 <tbody>
-                @foreach (var e in lowPriceEvents)
+                @foreach (var eventItem in lowPriceEvents)
                 {
                     <tr>
-                        <td>@e.Title</td>
-                        <td>@e.Category</td>
-                        <td>@e.EventDate.ToShortDateString()</td>
-                        <td class="text-warning fw-bold">@e.TicketPrice.ToString("C")</td>
-                        <td>@e.AvailableTickets</td>
+                        <td>@eventItem.Title</td>
+                        <td>@eventItem.Category</td>
+                        <td>@eventItem.EventDate.ToShortDateString()</td>
+                        <td class="text-warning fw-bold">@eventItem.TicketPrice.ToString("C")</td>
+                        <td>@eventItem.AvailableTickets</td>
                     </tr>
                 }
                 </tbody>
@@ -72,9 +68,8 @@
     else
     {
         <div class="alert alert-success border-0 shadow-sm">
-            <h5 class="alert-heading">🎉 Great News!</h5>
-            <p class="mb-0">All listed events are priced at $5 or more. No super-low bargain events currently!</p>
+            <h3 class="h5 alert-heading">No bargain-bin events right now</h3>
+            <p class="mb-0">Every listed event is currently priced above $5.</p>
         </div>
     }
-
 </div>
