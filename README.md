@@ -1,8 +1,10 @@
-# Event-and-Tickecting-management-system
+# Event-and-Ticketing-management-system
 
-<img src="docs/images/event-ticket-management-system-hero.png" alt="Event-and-Tickecting-management-system hero" width="900" />
+<img src="docs/images/event-ticket-management-system-hero.png" alt="Event-and-Ticketing-management-system hero" width="900" />
 
-`Event-and-Tickecting-management-system` is an ASP.NET Core MVC application for publishing events, browsing upcoming schedules, searching by availability and date, and purchasing tickets through a guest-friendly checkout flow.
+<img src="docs/images/event-ticket-management-system-events.png" alt="Event-and-Ticketing-management-system events" width="900" />
+
+`Event-and-Ticketing-management-system` is an ASP.NET Core MVC application for publishing events, browsing upcoming schedules, searching by availability and date, and purchasing tickets through a guest-friendly checkout flow.
 
 ## What The App Does
 
