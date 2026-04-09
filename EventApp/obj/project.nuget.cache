@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "kqfAEtfP+2w=",
+  "dgSpecHash": "uqpmP5Oy0bk=",
   "success": true,
-  "projectFilePath": "C:\\Users\\johnl\\RiderProjects\\EventApp_ASP.NET\\EventApp\\EventApp.csproj",
+  "projectFilePath": "C:\\Users\\johnl\\RiderProjects\\Event-and-Ticketing-management-system\\EventApp\\EventApp.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\johnl\\.nuget\\packages\\humanizer\\2.14.1\\humanizer.2.14.1.nupkg.sha512",
     "C:\\Users\\johnl\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",

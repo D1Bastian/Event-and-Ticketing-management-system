@@ -138,6 +138,7 @@ public static class HostExtensions
             var configuration = services.GetRequiredService<IConfiguration>();
 
             context.Database.Migrate();
+            DbInitializer.Initialize(context);
             SeedRoles(roleManager).Wait();
             SeedAdminUser(userManager, configuration).Wait();
         }
