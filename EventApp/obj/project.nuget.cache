@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "IFR47cT2ZcA=",
+  "dgSpecHash": "kqfAEtfP+2w=",
   "success": true,
-  "projectFilePath": "C:\\Users\\johnl\\Downloads\\COMP2139-f2025-Assignment-1-main\\COMP2139-f2025-Assignment-1-main\\EventApp\\EventApp.csproj",
+  "projectFilePath": "C:\\Users\\johnl\\RiderProjects\\EventApp_ASP.NET\\EventApp\\EventApp.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\johnl\\.nuget\\packages\\humanizer\\2.14.1\\humanizer.2.14.1.nupkg.sha512",
     "C:\\Users\\johnl\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",

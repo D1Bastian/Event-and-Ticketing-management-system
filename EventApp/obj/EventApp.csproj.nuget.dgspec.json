@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\johnl\\Downloads\\COMP2139-f2025-Assignment-1-main\\COMP2139-f2025-Assignment-1-main\\EventApp\\EventApp.csproj": {}
+    "C:\\Users\\johnl\\RiderProjects\\EventApp_ASP.NET\\EventApp\\EventApp.csproj": {}
   },
   "projects": {
-    "C:\\Users\\johnl\\Downloads\\COMP2139-f2025-Assignment-1-main\\COMP2139-f2025-Assignment-1-main\\EventApp\\EventApp.csproj": {
+    "C:\\Users\\johnl\\RiderProjects\\EventApp_ASP.NET\\EventApp\\EventApp.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\johnl\\Downloads\\COMP2139-f2025-Assignment-1-main\\COMP2139-f2025-Assignment-1-main\\EventApp\\EventApp.csproj",
+        "projectUniqueName": "C:\\Users\\johnl\\RiderProjects\\EventApp_ASP.NET\\EventApp\\EventApp.csproj",
         "projectName": "EventApp",
-        "projectPath": "C:\\Users\\johnl\\Downloads\\COMP2139-f2025-Assignment-1-main\\COMP2139-f2025-Assignment-1-main\\EventApp\\EventApp.csproj",
+        "projectPath": "C:\\Users\\johnl\\RiderProjects\\EventApp_ASP.NET\\EventApp\\EventApp.csproj",
         "packagesPath": "C:\\Users\\johnl\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\johnl\\Downloads\\COMP2139-f2025-Assignment-1-main\\COMP2139-f2025-Assignment-1-main\\EventApp\\obj\\",
+        "outputPath": "C:\\Users\\johnl\\RiderProjects\\EventApp_ASP.NET\\EventApp\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
