@@ -1,0 +1,11 @@
+@model PurchaseRequestViewModel
+@{
+    ViewData["Title"] = "Reserve tickets";
+}
+<nav class="breadcrumb"><a asp-controller="Event" asp-action="Index">Discover</a><span>/</span><a asp-controller="Event" asp-action="Details" asp-route-id="@Model.EventId">@Model.EventTitle</a><span>/</span><span>Reserve</span></nav>
+<section class="checkout-layout">
+    <div class="checkout-copy"><p class="eyebrow">Simple, secure checkout</p><h1>You're one step from <em>@Model.EventTitle.</em></h1><p class="lead">Your receipt stays private and is available immediately after confirmation.</p>
+        <dl class="event-facts checkout-facts"><div><dt>When</dt><dd>@Model.EventDate.ToString("dddd, MMMM d · h:mm tt")</dd></div><div><dt>Where</dt><dd>@Model.Location</dd></div><div><dt>Price</dt><dd>@(Model.TicketPrice == 0 ? "Free" : Model.TicketPrice.ToString("C")) per ticket</dd></div></dl>
+    </div>
+    <form asp-action="Create" method="post" class="panel checkout-card"><input asp-for="EventId" type="hidden" /><div asp-validation-summary="ModelOnly" class="validation"></div><h2>Your details</h2><p class="muted">@Model.AvailableTickets available right now.</p><label asp-for="GuestName"></label><input asp-for="GuestName" autocomplete="name" /><span asp-validation-for="GuestName" class="validation"></span><label asp-for="GuestEmail"></label><input asp-for="GuestEmail" autocomplete="email" /><span asp-validation-for="GuestEmail" class="validation"></span><label asp-for="Quantity"></label><input asp-for="Quantity" type="number" min="1" max="@Math.Min(100, Model.AvailableTickets)" /><span asp-validation-for="Quantity" class="validation"></span><div class="checkout-total"><span>Ticket price</span><strong>@(Model.TicketPrice == 0 ? "Free" : Model.TicketPrice.ToString("C"))</strong></div><button class="button full-width" type="submit">Reserve tickets</button><p class="fine-print">Submitting checks availability again so every confirmed reservation is real.</p></form>
+</section>

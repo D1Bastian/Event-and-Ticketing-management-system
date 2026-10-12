@@ -1,0 +1,10 @@
+@model IEnumerable<Event>
+@{
+    ViewData["Title"] = "Browse by category";
+    var categories = ViewBag.Categories as List<string> ?? [];
+    var selected = ViewBag.SelectedCategory as string ?? string.Empty;
+}
+<section class="page-heading"><div><p class="eyebrow">Explore your way</p><h1>Choose the energy.</h1><p class="lead">Browse experiences by the mood, interest, or community that draws you in.</p></div></section>
+<nav class="chip-row" aria-label="Event categories"><a class="chip @(string.IsNullOrEmpty(selected) ? "active" : "")" asp-action="BrowseEvent">All events</a>@foreach (var category in categories) { <a class="chip @(selected == category ? "active" : "")" asp-action="BrowseEvent" asp-route-category="@category">@category</a> }</nav>
+@if (Model.Any()) { <section class="event-grid compact-grid">@foreach (var item in Model) { <article class="event-card"><span class="tag">@item.Category</span><h2><a asp-action="Details" asp-route-id="@item.Id">@item.Title</a></h2><p class="event-location">@item.EventDate.ToString("dddd, MMM d · h:mm tt")<br />@item.Location</p><div class="event-card-footer"><span class="availability @(item.AvailableTickets == 0 ? "sold-out" : "")">@(item.AvailableTickets == 0 ? "Sold out" : $"{item.AvailableTickets} spots left")</span><a class="text-link" asp-action="Details" asp-route-id="@item.Id">Open</a></div></article> }</section> }
+else { <section class="empty-state"><h1>No events in this category yet.</h1><p>Try another category or see everything that is coming up.</p><a class="button" asp-action="BrowseEvent">Show all events</a></section> }

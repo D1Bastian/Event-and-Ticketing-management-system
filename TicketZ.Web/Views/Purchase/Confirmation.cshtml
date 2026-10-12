@@ -1,0 +1,6 @@
+@model Purchase
+@{
+    ViewData["Title"] = "Reservation confirmed";
+}
+<section class="confirmation"><div class="confirmation-mark" aria-hidden="true">✓</div><p class="eyebrow">Reservation confirmed</p><h1>You're on the list.</h1><p class="lead">@Model.GuestName, your place for <strong>@Model.Event?.Title</strong> is secured.</p></section>
+<section class="receipt panel"><div class="receipt-heading"><div><span class="tag">Private receipt</span><h2>@Model.Event?.Title</h2></div><strong>@Model.TotalCost.ToString("C")</strong></div><dl class="receipt-grid"><div><dt>When</dt><dd>@Model.Event?.EventDate.ToString("dddd, MMMM d · h:mm tt")</dd></div><div><dt>Where</dt><dd>@Model.Event?.Location</dd></div><div><dt>Tickets</dt><dd>@Model.Quantity</dd></div><div><dt>Guest</dt><dd>@Model.GuestName<br />@Model.GuestEmail</dd></div><div><dt>Purchased</dt><dd>@Model.PurchaseDate.ToLocalTime().ToString("MMM d, yyyy · h:mm tt")</dd></div><div><dt>Receipt</dt><dd>#@Model.PurchaseId.ToString("D6")</dd></div></dl><div class="receipt-actions"><a class="button button-quiet" asp-controller="Event" asp-action="Index">Discover more events</a>@if (ViewBag.CanViewPurchaseSummary == true) { <a class="button" asp-action="Index">View sales</a> }</div></section>

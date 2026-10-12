@@ -1,0 +1,26 @@
+@{
+    ViewData["Title"] = "Events, made memorable";
+}
+<section class="hero">
+    <div class="hero-copy">
+        <p class="eyebrow">The experience platform</p>
+        <h1>Find the moment<br /><em>you'll talk about.</em></h1>
+        <p class="hero-lede">TicketZ brings local culture, professional gatherings, and spontaneous nights out into one calm, useful place.</p>
+        <div class="hero-actions">
+            <a class="button" asp-controller="Event" asp-action="Index">Explore experiences</a>
+            <a class="button button-quiet" asp-controller="Event" asp-action="Search">Plan by date</a>
+        </div>
+    </div>
+    <aside class="hero-card" aria-label="TicketZ benefits">
+        <p class="eyebrow">Built for the next yes</p>
+        <div class="hero-stat"><strong>One place</strong><span>to discover what is happening</span></div>
+        <div class="hero-stat"><strong>Live availability</strong><span>so a great plan stays possible</span></div>
+        <div class="hero-stat"><strong>Private receipts</strong><span>for a worry-free checkout</span></div>
+    </aside>
+</section>
+
+<section class="feature-grid" aria-label="What TicketZ offers">
+    <article><span class="feature-number">01</span><h2>Discover deliberately</h2><p>Filter by date, category, price, and availability instead of scrolling through noise.</p></article>
+    <article><span class="feature-number">02</span><h2>Book with confidence</h2><p>Availability is checked at purchase time, protecting guests from overbooking.</p></article>
+    <article><span class="feature-number">03</span><h2>Build a scene</h2><p>Organizers get a focused studio for publishing events and tracking ticket demand.</p></article>
+</section>

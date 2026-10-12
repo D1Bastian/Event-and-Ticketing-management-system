@@ -1,0 +1,10 @@
+bin/
+obj/
+logs/
+keys/
+*.db
+*.db-shm
+*.db-wal
+.vs/
+.idea/
+appsettings.Local.json

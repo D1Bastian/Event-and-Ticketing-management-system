@@ -1,0 +1,14 @@
+@model ErrorViewModel
+@{
+    ViewData["Title"] = "Something went wrong";
+}
+<section class="empty-state">
+    <p class="eyebrow">Unexpected detour</p>
+    <h1>We could not complete that request.</h1>
+    <p>Please return to discovery and try again. Your ticket information has not been changed.</p>
+    @if (Model.ShowRequestId)
+    {
+        <p class="muted">Request ID: <code>@Model.RequestId</code></p>
+    }
+    <a class="button" asp-controller="Event" asp-action="Index">Browse events</a>
+</section>

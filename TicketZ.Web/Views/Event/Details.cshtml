@@ -1,0 +1,14 @@
+@model Event
+@{
+    ViewData["Title"] = Model.Title;
+    var canManage = User.IsInRole("Admin") || User.IsInRole("Organizer");
+    var soldOut = Model.AvailableTickets <= 0;
+}
+<nav class="breadcrumb"><a asp-action="Index">Discover</a><span>/</span><span>@Model.Category</span></nav>
+<section class="detail-hero">
+    <div><span class="tag">@Model.Category</span><h1>@Model.Title</h1><p class="lead">@Model.Description</p><dl class="event-facts"><div><dt>When</dt><dd>@Model.EventDate.ToString("dddd, MMMM d · h:mm tt")</dd></div><div><dt>Where</dt><dd>@Model.Location</dd></div><div><dt>Admission</dt><dd>@(Model.TicketPrice == 0 ? "Free" : Model.TicketPrice.ToString("C"))</dd></div></dl></div>
+    <aside class="booking-card"><p class="eyebrow">Your place</p><strong class="booking-price">@(Model.TicketPrice == 0 ? "Free" : Model.TicketPrice.ToString("C"))</strong><p class="@(soldOut ? "text-danger" : "muted")">@(soldOut ? "This event is sold out." : $"{Model.AvailableTickets} of {Model.Capacity} spots available")</p>
+        @if (!soldOut) { <a class="button full-width" asp-controller="Purchase" asp-action="Create" asp-route-eventId="@Model.Id">Reserve tickets</a> }
+        @if (canManage) { <div class="inline-actions"><a asp-action="Edit" asp-route-id="@Model.Id">Edit</a><a asp-action="Delete" asp-route-id="@Model.Id">Delete</a></div> }
+    </aside>
+</section>

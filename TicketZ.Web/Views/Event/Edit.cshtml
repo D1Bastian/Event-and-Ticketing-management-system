@@ -1,0 +1,9 @@
+@model Event
+@{
+    ViewData["Title"] = "Edit event";
+}
+<section class="form-page"><div class="form-intro"><p class="eyebrow">Organizer studio</p><h1>Refine the details.</h1><p>Keep attendees up to date with the latest event information.</p></div>
+<form asp-action="Edit" method="post" class="panel form-panel"><input asp-for="Id" type="hidden" /><div asp-validation-summary="ModelOnly" class="validation"></div>
+    <div class="form-grid"><label asp-for="Title"></label><input asp-for="Title" /><span asp-validation-for="Title" class="validation"></span><label asp-for="Category"></label><input asp-for="Category" /><span asp-validation-for="Category" class="validation"></span><label asp-for="Location"></label><input asp-for="Location" /><span asp-validation-for="Location" class="validation"></span><label asp-for="EventDate"></label><input asp-for="EventDate" type="datetime-local" /><span asp-validation-for="EventDate" class="validation"></span><label asp-for="Description" class="form-full"></label><textarea asp-for="Description" class="form-full" rows="5"></textarea><span asp-validation-for="Description" class="validation form-full"></span><label asp-for="Capacity"></label><input asp-for="Capacity" min="1" /><span asp-validation-for="Capacity" class="validation"></span><label asp-for="AvailableTickets"></label><input asp-for="AvailableTickets" min="0" /><span asp-validation-for="AvailableTickets" class="validation"></span><label asp-for="TicketPrice"></label><input asp-for="TicketPrice" min="0" step="0.01" /><span asp-validation-for="TicketPrice" class="validation"></span></div>
+    <div class="form-actions"><a class="button button-quiet" asp-action="Details" asp-route-id="@Model.Id">Cancel</a><button class="button" type="submit">Save changes</button></div>
+</form></section>

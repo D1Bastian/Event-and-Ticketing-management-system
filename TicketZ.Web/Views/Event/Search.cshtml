@@ -1,0 +1,20 @@
+@model IEnumerable<Event>
+@{
+    ViewData["Title"] = "Find an event";
+    var categories = ViewBag.Categories as List<string> ?? [];
+    var selectedCategory = ViewBag.SelectedCategory as string ?? string.Empty;
+    var searchTitle = ViewBag.SearchTitle as string ?? string.Empty;
+    var startDate = ViewBag.StartDate as string ?? string.Empty;
+    var endDate = ViewBag.EndDate as string ?? string.Empty;
+    var ticketStatus = ViewBag.TicketStatus as string ?? string.Empty;
+    var sortOrder = ViewBag.SortOrder as string ?? "Date";
+}
+<section class="page-heading"><div><p class="eyebrow">Search with intent</p><h1>There is an event for that.</h1><p class="lead">Use a few useful filters and let TicketZ narrow the possibilities.</p></div></section>
+<form asp-action="Search" method="get" class="panel search-panel">
+    <div class="search-grid"><label><span>Keywords</span><input name="searchTitle" value="@searchTitle" placeholder="e.g. jazz, hackathon" /></label><label><span>Category</span><select name="category"><option value="">Any category</option>@foreach (var item in categories) { <option value="@item" selected="@(item == selectedCategory)">@item</option> }</select></label><label><span>From</span><input type="date" name="startDate" value="@startDate" /></label><label><span>To</span><input type="date" name="endDate" value="@endDate" /></label><label><span>Availability</span><select name="ticketStatus"><option value="">Any availability</option><option value="Available" selected="@(ticketStatus == "Available")">Tickets available</option><option value="SoldOut" selected="@(ticketStatus == "SoldOut")">Sold out</option></select></label><label><span>Order by</span><select name="sortOrder"><option value="Date" selected="@(sortOrder == "Date")">Soonest date</option><option value="Title" selected="@(sortOrder == "Title")">Title</option><option value="Price" selected="@(sortOrder == "Price")">Lowest price</option></select></label></div>
+    <div class="form-actions"><a class="button button-quiet" asp-action="Search">Clear</a><button class="button" type="submit">Show matches</button></div>
+</form>
+@if (ViewBag.FilterError is string filterError) { <div class="alert alert-error" role="alert">@filterError</div> }
+<section class="result-heading"><h2>@Model.Count() result@(Model.Count() == 1 ? "" : "s")</h2><p>Matches update against live ticket availability.</p></section>
+@if (Model.Any()) { <div class="list-stack search-results">@foreach (var item in Model) { <a class="list-row" asp-action="Details" asp-route-id="@item.Id"><span><span class="tag">@item.Category</span><strong>@item.Title</strong><small>@item.EventDate.ToString("ddd, MMM d · h:mm tt") · @item.Location</small></span><span class="result-price"><strong>@(item.TicketPrice == 0 ? "Free" : item.TicketPrice.ToString("C"))</strong><small class="@(item.AvailableTickets > 0 ? "text-success" : "text-danger")">@(item.AvailableTickets > 0 ? $"{item.AvailableTickets} left" : "Sold out")</small></span></a> }</div> }
+else { <section class="empty-state"><h2>No exact matches.</h2><p>Loosen a filter or browse the full lineup.</p><a class="button button-quiet" asp-action="Index">See all events</a></section> }

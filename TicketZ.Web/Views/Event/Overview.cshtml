@@ -1,0 +1,14 @@
+@{
+    ViewData["Title"] = "Organizer studio";
+    var lowPriceEvents = ViewBag.LowPriceEvents as List<Event> ?? [];
+}
+<section class="page-heading"><div><p class="eyebrow">Organizer studio</p><h1>A clearer view of your scene.</h1><p class="lead">A lightweight pulse-check on your published event inventory.</p></div><a class="button" asp-action="Create">Publish an event</a></section>
+<section class="metric-grid">
+    <article><span>Published events</span><strong>@ViewBag.TotalEvents</strong><p>on the calendar</p></article>
+    <article><span>Communities</span><strong>@ViewBag.TotalCategories</strong><p>distinct categories</p></article>
+    <article><span>Open seats</span><strong>@ViewBag.TotalAvailableTickets</strong><p>ready to be claimed</p></article>
+</section>
+<section class="panel table-panel"><div class="section-heading"><div><p class="eyebrow">Access for everyone</p><h2>Low-cost experiences</h2></div><a class="text-link" asp-action="Search" asp-route-sortOrder="Price">Explore all</a></div>
+@if (lowPriceEvents.Any()) { <div class="list-stack">@foreach (var item in lowPriceEvents) { <a class="list-row" asp-action="Details" asp-route-id="@item.Id"><span><strong>@item.Title</strong><small>@item.Category · @item.EventDate.ToString("MMM d")</small></span><span>@(item.TicketPrice == 0 ? "Free" : item.TicketPrice.ToString("C"))</span></a> }</div> }
+else { <p class="muted">No events under $5 are scheduled right now.</p> }
+</section>

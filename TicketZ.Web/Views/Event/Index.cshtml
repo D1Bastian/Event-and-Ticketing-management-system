@@ -1,0 +1,37 @@
+@model IEnumerable<Event>
+@{
+    ViewData["Title"] = "Discover events";
+    var canManage = User.IsInRole("Admin") || User.IsInRole("Organizer");
+}
+<section class="page-heading">
+    <div><p class="eyebrow">What is on</p><h1>Make your next plan a good one.</h1><p class="lead">Explore upcoming experiences, then reserve a place before the room fills up.</p></div>
+    <div class="heading-actions">
+        <a class="button button-quiet" asp-action="Search">Fine-tune search</a>
+        @if (canManage) { <a class="button" asp-action="Create">Publish an event</a> }
+    </div>
+</section>
+
+@if (Model.Any())
+{
+    <section class="event-grid">
+    @foreach (var item in Model)
+    {
+        var soldOut = item.AvailableTickets <= 0;
+        <article class="event-card">
+            <div class="event-card-top"><span class="tag">@item.Category</span><span class="availability @(soldOut ? "sold-out" : "")">@(soldOut ? "Sold out" : $"{item.AvailableTickets} spots left")</span></div>
+            <div class="event-date"><span>@item.EventDate.ToString("MMM", CultureInfo.InvariantCulture).ToUpperInvariant()</span><strong>@item.EventDate.ToString("dd")</strong></div>
+            <h2><a asp-action="Details" asp-route-id="@item.Id">@item.Title</a></h2>
+            <p class="event-location">@item.Location · @item.EventDate.ToString("ddd, h:mm tt")</p>
+            <p class="event-description">@item.Description</p>
+            <div class="event-card-footer"><strong>@(item.TicketPrice == 0 ? "Free" : item.TicketPrice.ToString("C"))</strong><div>
+                <a class="text-link" asp-action="Details" asp-route-id="@item.Id">Details</a>
+                @if (!soldOut) { <a class="button button-small" asp-controller="Purchase" asp-action="Create" asp-route-eventId="@item.Id">Reserve</a> }
+            </div></div>
+        </article>
+    }
+    </section>
+}
+else
+{
+    <section class="empty-state"><p class="eyebrow">Fresh canvas</p><h1>No upcoming events yet.</h1><p>Check back soon—or publish the first one.</p>@if (canManage) { <a class="button" asp-action="Create">Publish an event</a> }</section>
+}

@@ -1,0 +1,6 @@
+@model Event
+@{
+    ViewData["Title"] = "Delete event";
+}
+<section class="form-page"><div class="form-intro"><p class="eyebrow">Organizer studio</p><h1>Remove this event?</h1><p>This action removes <strong>@Model.Title</strong> and cannot be undone.</p></div>
+<form asp-action="Delete" method="post" class="panel danger-panel"><input asp-for="Id" type="hidden" /><dl class="event-facts"><div><dt>Date</dt><dd>@Model.EventDate.ToString("f")</dd></div><div><dt>Location</dt><dd>@Model.Location</dd></div><div><dt>Tickets sold</dt><dd>@(Model.Capacity - Model.AvailableTickets)</dd></div></dl><div class="form-actions"><a class="button button-quiet" asp-action="Details" asp-route-id="@Model.Id">Keep event</a><button class="button button-danger" type="submit">Delete event</button></div></form></section>
