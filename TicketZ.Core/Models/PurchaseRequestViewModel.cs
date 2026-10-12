@@ -18,11 +18,6 @@ public class PurchaseRequestViewModel
     [Display(Name = "Available Tickets")]
     public int AvailableTickets { get; set; }
 
-    [Required(ErrorMessage = "Full name is required.")]
-    [StringLength(100)]
-    [Display(Name = "Full Name")]
-    public string GuestName { get; set; } = string.Empty;
-
     [Required(ErrorMessage = "Email address is required.")]
     [EmailAddress]
     [Display(Name = "Email Address")]

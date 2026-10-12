@@ -104,7 +104,9 @@ public class PurchaseController : Controller
         var purchase = new Purchase
         {
             EventId = model.EventId,
-            GuestName = model.GuestName.Trim(),
+            // Guest checkout is intentionally email-only. Accounts remain
+            // optional and are reserved for organizers and administrators.
+            GuestName = string.Empty,
             GuestEmail = model.GuestEmail.Trim(),
             Quantity = model.Quantity,
             TotalCost = model.Quantity * model.TicketPrice,

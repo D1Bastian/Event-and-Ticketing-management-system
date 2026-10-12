@@ -8,9 +8,8 @@ public class Purchase
     [Key]
     public int PurchaseId { get; set; }
 
-    [Required(ErrorMessage = "Full Name is required.")]
     [StringLength(100)]
-    [Display(Name = "Full Name")]
+    [Display(Name = "Name")]
     public string GuestName { get; set; } = string.Empty;
 
     [Required(ErrorMessage = "Email Address is required.")]
