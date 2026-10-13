@@ -1,26 +1,102 @@
 @{
-    ViewData["Title"] = "Events, made memorable";
+    ViewData["Title"] = "Find your next story";
 }
-<section class="hero">
-    <div class="hero-copy">
-        <p class="eyebrow">The experience platform</p>
-        <h1>Find the moment<br /><em>you'll talk about.</em></h1>
-        <p class="hero-lede">TicketZ brings local culture, professional gatherings, and spontaneous nights out into one calm, useful place.</p>
-        <div class="hero-actions">
-            <a class="button" asp-controller="Event" asp-action="Index">Explore experiences</a>
-            <a class="button button-quiet" asp-controller="Event" asp-action="Search">Plan by date</a>
-        </div>
-    </div>
-    <aside class="hero-card" aria-label="TicketZ benefits">
-        <p class="eyebrow">Built for the next yes</p>
-        <div class="hero-stat"><strong>One place</strong><span>to discover what is happening</span></div>
-        <div class="hero-stat"><strong>Live availability</strong><span>so a great plan stays possible</span></div>
-        <div class="hero-stat"><strong>Private receipts</strong><span>for a worry-free checkout</span></div>
-    </aside>
-</section>
 
-<section class="feature-grid" aria-label="What TicketZ offers">
-    <article><span class="feature-number">01</span><h2>Discover deliberately</h2><p>Filter by date, category, price, and availability instead of scrolling through noise.</p></article>
-    <article><span class="feature-number">02</span><h2>Book with confidence</h2><p>Availability is checked at purchase time, protecting guests from overbooking.</p></article>
-    <article><span class="feature-number">03</span><h2>Build a scene</h2><p>Organizers get a focused studio for publishing events and tracking ticket demand.</p></article>
-</section>
+<div class="front-page">
+    <section class="festival-hero" aria-labelledby="home-heading">
+        <div class="hero-botanical botanical-left" aria-hidden="true"></div>
+        <div class="hero-botanical botanical-right" aria-hidden="true"></div>
+
+        <div class="festival-hero-copy">
+            <p class="festival-kicker"><span></span> Your city, in full colour</p>
+            <h1 id="home-heading">Go where the<br /><em>good energy</em> is.</h1>
+            <p class="festival-lede">A joyful shortcut to concerts, culture, food, and every can’t-miss gathering around you.</p>
+            <div class="hero-actions">
+                <a class="button button-sun" asp-controller="Event" asp-action="Index">Explore events <span aria-hidden="true">↗</span></a>
+                <a class="hero-text-link" asp-controller="Event" asp-action="Search">Find by date <span aria-hidden="true">→</span></a>
+            </div>
+            <div class="hero-proof" aria-label="TicketZ community">
+                <div class="avatar-stack" aria-hidden="true"><i></i><i></i><i></i><i>+</i></div>
+                <p><strong>12,000+ locals</strong><br />making plans this week</p>
+            </div>
+        </div>
+
+        <aside class="hero-scene" aria-label="Featured event preview">
+            <div class="scene-orbit orbit-one" aria-hidden="true"></div>
+            <div class="scene-orbit orbit-two" aria-hidden="true"></div>
+            <div class="scene-sun" aria-hidden="true"></div>
+            <div class="featured-event-card">
+                <div class="card-flora" aria-hidden="true"><span></span><span></span><span></span></div>
+                <p class="event-card-label">Featured this weekend</p>
+                <p class="event-card-date"><span>OCT</span><strong>18</strong> · 7:30 PM</p>
+                <h2>Afterglow<br />in the Gardens</h2>
+                <div class="event-card-meta"><span>✦ Riverside Conservatory</span><span>$28+</span></div>
+            </div>
+            <div class="scene-note"><span aria-hidden="true">✦</span> Save the date</div>
+        </aside>
+    </section>
+
+    <section class="spotlight-section" aria-labelledby="spotlight-heading">
+        <div class="section-heading-festival">
+            <div>
+                <p class="festival-kicker"><span></span> Curated for right now</p>
+                <h2 id="spotlight-heading">Pick your<br /><em>kind of magic.</em></h2>
+            </div>
+            <a class="section-link" asp-controller="Event" asp-action="BrowseEvent">See all experiences <span aria-hidden="true">↗</span></a>
+        </div>
+
+        <div class="mood-grid">
+            <a class="mood-card mood-card-night" asp-controller="Event" asp-action="BrowseEvent" asp-route-category="Music">
+                <span class="mood-art mood-art-night" aria-hidden="true"></span>
+                <span class="mood-copy"><small>Turn it up</small><strong>Live music</strong><i>Feel it in the front row →</i></span>
+            </a>
+            <a class="mood-card mood-card-market" asp-controller="Event" asp-action="BrowseEvent" asp-route-category="Food">
+                <span class="mood-art mood-art-market" aria-hidden="true"></span>
+                <span class="mood-copy"><small>Taste something new</small><strong>Food &amp; drink</strong><i>Pull up a chair →</i></span>
+            </a>
+            <a class="mood-card mood-card-soul" asp-controller="Event" asp-action="BrowseEvent" asp-route-category="Culture">
+                <span class="mood-art mood-art-soul" aria-hidden="true"></span>
+                <span class="mood-copy"><small>Make a memory</small><strong>Culture &amp; art</strong><i>See what’s stirring →</i></span>
+            </a>
+        </div>
+    </section>
+
+    <section class="partner-section" aria-labelledby="partner-heading">
+        <div class="partner-section-intro">
+            <div>
+                <p class="festival-kicker festival-kicker-light"><span></span> Local partners</p>
+                <h2 id="partner-heading">Good things,<br /><em>backed locally.</em></h2>
+            </div>
+            <p>Meet the brands and venues helping your next great night take shape.</p>
+        </div>
+
+        <div class="partner-carousel" role="region" aria-label="Featured vendor and advertiser carousel">
+            <div class="partner-track">
+                <article class="partner-card partner-card-coral">
+                    <span class="partner-type">Partner feature</span><span class="partner-logo">wild<br />root</span><p>Botanical bites &amp; bright pours.</p><a href="#partner-heading">Discover Wild Root <span aria-hidden="true">↗</span></a>
+                </article>
+                <article class="partner-card partner-card-gold">
+                    <span class="partner-type">Vendor spotlight</span><span class="partner-logo partner-logo-wide">The<br /><b>Friday</b> Market</span><p>Small makers. Big weekend energy.</p><a href="#partner-heading">Meet the makers <span aria-hidden="true">↗</span></a>
+                </article>
+                <article class="partner-card partner-card-aqua">
+                    <span class="partner-type">Powered by</span><span class="partner-logo partner-logo-wide">BLOOM<br /><b>STUDIO</b></span><p>Making the city a little more colourful.</p><a href="#partner-heading">Visit Bloom Studio <span aria-hidden="true">↗</span></a>
+                </article>
+                <article class="partner-card partner-card-berry">
+                    <span class="partner-type">Now partnering</span><span class="partner-logo">TERRA<br />TONIC</span><p>Slow drinks for lively evenings.</p><a href="#partner-heading">Explore Terra Tonic <span aria-hidden="true">↗</span></a>
+                </article>
+            </div>
+        </div>
+        <div class="carousel-hint"><span aria-hidden="true">←</span> Slide to meet our partners <span aria-hidden="true">→</span></div>
+    </section>
+
+    <section class="how-it-works" aria-labelledby="how-heading">
+        <div class="how-visual" aria-hidden="true"><span class="how-spark spark-one">✦</span><span class="how-spark spark-two">✦</span><div class="how-ticket"><small>TICKETZ</small><strong>GOOD<br />TIME</strong><i>ADMIT ONE</i></div></div>
+        <div class="how-copy">
+            <p class="festival-kicker"><span></span> Made for spontaneous people</p>
+            <h2 id="how-heading">Less looking.<br /><em>More living.</em></h2>
+            <p>From low-key pop-ups to high-volume headline shows, TicketZ keeps the good stuff beautifully easy to find and book.</p>
+            <div class="how-points"><span><b>01</b> Follow your mood</span><span><b>02</b> Book in moments</span><span><b>03</b> Show up glowing</span></div>
+            <a class="button button-forest" asp-controller="Account" asp-action="Register">Create your free account <span aria-hidden="true">↗</span></a>
+        </div>
+    </section>
+</div>
