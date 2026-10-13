@@ -65,7 +65,7 @@ dotnet restore TicketZ.sln
 dotnet run --project TicketZ.Web
 ```
 
-The development launch profile serves the app at `http://localhost:5207`. On first run, TicketZ creates the local SQLite database, roles, and a small catalog of sample events.
+On first run, TicketZ creates the local SQLite database, roles, and a small catalog of sample events.
 
 ### Build check
 
@@ -76,12 +76,5 @@ dotnet build TicketZ.sln --no-restore
 ## Configuration and local data
 
 `TicketZ.Web/appsettings.json` is intentionally safe to commit: it uses a local SQLite connection and leaves the optional `SeedAdmin` email and password blank.
-
-Keep local-only configuration and generated data out of version control. The included `.gitignore` excludes:
-
-- local SQLite database files
-- data-protection key material
-- logs and build output
-- `appsettings.Local.json`
 
 To use PostgreSQL, set `Database:Provider` to `PostgreSQL` and provide an appropriate `ConnectionStrings:DefaultConnection` value through a non-tracked environment-specific configuration source.
